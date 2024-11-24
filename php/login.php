@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +17,7 @@
 </html>
 
 <?php
-    include_once("config/config.php");
+    include_once("config/config.php"); // conectar com o banco de dados
     session_start();
     $username = !empty($_POST['username']) ? $_POST['username'] : false;
     $password = !empty($_POST['password']) ? $_POST['password'] : false;  
@@ -28,10 +28,10 @@
         $cookie_expiration = time() + 3600;
 
         $sql = "SELECT * FROM usuario WHERE username = '" . $hashusername . "' AND password = '". $hashpassword . "'";
-
+        // recebendo o resultado da query
         $result = mysqli_query($link, $sql);
 
-        if(mysqli_num_rows($result) > 0){
+        if(mysqli_num_rows($result) > 0){ // se o número de linhas retornado for maior que 0, então tem um usuário no sistema
             echo "Login successful!";
             setcookie("username", $username, $cookie_expiration, "/");
             setcookie("loggedin", "1", $cookie_expiration, "/");
