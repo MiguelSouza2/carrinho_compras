@@ -1,11 +1,11 @@
 <?php
-session_start(); 
+session_start();
 
-include_once("config/config.php"); // conectar com o banco de dados
-include_once("carrinho.php"); // inclui a parte do carrinho
+include_once("config/config.php");
+include_once("carrinho.php");
 
-if ($_COOKIE['loggedin'] == "1") { // Verifica se o usuário está logado
-    $username = isset($_COOKIE['username']) ? $_COOKIE['username'] : ""; 
+if ($_COOKIE['loggedin'] == "1") {
+    $username = isset($_COOKIE['username']) ? $_COOKIE['username'] : "";
 }
 ?>
 
@@ -13,80 +13,129 @@ if ($_COOKIE['loggedin'] == "1") { // Verifica se o usuário está logado
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8"> 
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carrinho</title> 
+    <title>UDigital</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="../assets/favicon/favicon.ico" type="image/x-icon">
 </head>
 
-<body>
-    <p>Olá <?php echo $username . "!"; ?></p> 
+<body class="bg-dark text-light d-flex flex-column min-vh-100">
 
-    <section>
-        <h2>Produtos Disponíveis</h2>
-        <table border="1"> 
-            <tr>
-                <td>Nome</td>
-                <td>Imagem</td>
-                <td>Adicionar</td>
-            </tr>
-            <?php
-            $path = "../"; 
-            $directory = "product-images/"; 
-            $sql = "SELECT descricao, imagem FROM carrinhocompras"; 
-            $result = mysqli_query($link, $sql); 
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <img src="../assets/logo-site.jpeg" class="rounded-circle mx-3" border="1" width="40vw" height="40vw">
+            <a class="navbar-brand" href="#">UDigital</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Produtos</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-            // loop pra mostrar os produtos selecionados
-            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                echo
-                "<tr>
-                    <td>" . $row['descricao'] . "</td> <!-- descrição do produto -->
-                    <td><img src='" . $path . $directory . $row['imagem'] . "' style='width:10vw;height:10vw;'></td> <!-- imagem do produto -->
-                    <td>
-                        <form method='POST'>
-                            <input type='hidden' name='descricao' value='" . $row['descricao'] . "'> <!-- adiciona as tags name para pegar os valores pelo método post -->
-                            <input type='hidden' name='imagem' value='" . $row['imagem'] . "'> 
-                            <button type='submit' name='add_to_cart'>Adicionar ao carrinho</button>
-                        </form>
-                    </td>
-                </tr>";
-            }
-            ?>
-        </table>
-    </section>
+    <!-- Conteúdo Principal -->
+    <div class="container flex-grow-1 my-4">
+        <p class="fs-1">Olá <strong><?php echo $username ?></strong>!</p>
+        <div class="row">
+            <!-- Coluna de Produtos -->
+            <div class="col-md-8">
+                <h2 class="text-center mb-4">Produtos Disponíveis</h2>
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Imagem</th>
+                                <th>Preço</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $path = "../assets/";
+                            $directory = "product-images/";
+                            $sql = "SELECT descricao, imagem, preco FROM carrinhocompras";
+                            $result = mysqli_query($link, $sql);
 
-    <section>
-        <h2>Carrinho</h2>
-        <table border="1"> 
-            <tr>
-                <td>Nome</td>
-                <td>Imagem</td>
-                <td>Remover</td>
-            </tr>
-            <?php
-            
-            if (!empty($_SESSION['carrinho'])) {
-                // loop para exibir os itens no carrinho
-                foreach ($_SESSION['carrinho'] as $index => $item) {
-                    echo "<tr>";
-                    echo "<td>" . $item['descricao'] . "</td>"; // Exibe a descrição do item no carrinho
-                    echo "<td><img src='" . $path . $directory . $item['imagem'] . "' style='width:10vw;height:10vw;'></td>"; // Exibe a imagem do item no carrinho
-                    
-                   
-                    echo "<td>
-                             <form method='POST'>
-                                <input type='hidden' name='index' value='$index'> <!-- Envia o índice do item no carrinho -->
-                                <button type='submit' name='remove_from_cart'>Remover</button> <!-- Botão para remover o item do carrinho -->
-                            </form>
-                          </td>";
-                    echo "</tr>";
-                }
-            } else {
-                
-                echo "<tr><td>Seu carrinho está vazio.</td></tr>";
-            }
-            ?>
-        </table>
-    </section>
+                            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                echo
+                                    "<tr>
+                                    <td class='text-center mx-2'>" . $row['descricao'] . "</td>
+                                    <td class='text-center mx-2'><img src='" . $path . $directory . $row['imagem'] . "' style='width:100px;height:100px;border-radius:7px' ></td>
+                                    <td class='text-center mx-2'>R$" . $row['preco'] . "</td>
+                                    <td>
+                                        <form method='POST'>
+                                            <input type='hidden' name='descricao' value='" . $row['descricao'] . "'>
+                                            <input type='hidden' name='imagem' value='" . $row['imagem'] . "'> 
+                                            <input type='hidden' name='preco' value='" . $row['preco'] . "'> 
+                                            <button type='submit' name='add_to_cart' class='btn btn-primary'>Adicionar</button>
+                                        </form>
+                                    </td>
+                                </tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Coluna do Carrinho -->
+            <div class="col-md-4">
+                <h2 class="text-center mb-4">Carrinho</h2>
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Imagem</th>
+                                <th>Preço</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if (!empty($_SESSION['carrinho'])) {
+                                foreach ($_SESSION['carrinho'] as $index => $item) {
+                                    echo "<tr>";
+                                    echo "<td class='text-center'>" . $item['descricao'] . "</td>";
+                                    echo "<td class='text-center'><img src='" . $path . $directory . $item['imagem'] . "' style='width:100px;height:100px;border-radius:7px'></td>";
+                                    echo "<td class='text-center'>R$". $item['preco'] . "</td>";
+                                    echo "<td>
+                                            <form method='POST'>
+                                                <input type='hidden' name='index' value='$index'>
+                                                <button type='submit' name='remove_from_cart' class='btn btn-danger'>Remover</button>
+                                            </form>
+                                          </td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='3' class='text-center'>Seu carrinho está vazio.</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="bg-primary text-center py-3 mt-auto">
+        <div class="container">
+            <p class="mb-0">© 2024 Eletrônicos. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

@@ -7,15 +7,17 @@ if (!isset($_SESSION['carrinho'])) {
     $_SESSION['carrinho'] = []; 
 }
 
-// Adicionando a descrição e a imagem ao carrinho
+// Adicionando a descrição,, preço e a imagem ao carrinho
 if (isset($_POST['add_to_cart'])) { // gambiarra
     $descricao = $_POST['descricao'];
     $imagem = $_POST['imagem']; 
+    $preco = $_POST['preco'];  
 
     // Colocando os valores dentro do array do carrinho (salvo na variável de sessão)
     $_SESSION['carrinho'][] = [ 
         'descricao' => $descricao,
-        'imagem' => $imagem 
+        'imagem' => $imagem,
+        'preco' => $preco
     ];
 }
 
